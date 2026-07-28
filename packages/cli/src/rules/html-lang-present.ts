@@ -17,6 +17,13 @@ const getDocumentCandidateGroups = (
 ): DocumentCandidateGroup[] => {
   const groups: DocumentCandidateGroup[] = [];
 
+  if (project.versions.svelteKit && project.paths.svelteAppHtml) {
+    groups.push({
+      label: "SvelteKit app shell",
+      paths: [project.paths.svelteAppHtml],
+    });
+  }
+
   if (project.versions.next && project.paths.appDir) {
     groups.push({
       label: "App Router",

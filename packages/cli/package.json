@@ -1,7 +1,7 @@
 {
   "name": "@shadscan/cli",
   "version": "0.7.0",
-  "description": "Audit React shadcn apps for missing UI fundamentals.",
+  "description": "Audit React and Svelte shadcn apps for missing UI fundamentals.",
   "license": "MIT",
   "type": "module",
   "homepage": "https://www.shadscan.com/docs",
@@ -19,6 +19,7 @@
     "audit",
     "cli",
     "react",
+    "svelte",
     "ui"
   ],
   "engines": {

@@ -131,7 +131,7 @@ const OPENAPI_DOCUMENT = {
     "/v1/scans": {
       post: {
         operationId: "createHostedScan",
-        summary: "Scan a React shadcn project",
+        summary: "Scan a React or Svelte shadcn project",
         description: `Submit either a public GitHub source as JSON or a sanitized gzip tar snapshot as the raw request body. The service resolves an immutable source, scans it without executing repository code, and returns within the ${HOSTED_SCAN_MAX_DURATION_SECONDS}-second request boundary. Request Markdown to receive only the agent prompt. Review [the agent instructions](${SHADSCAN_AGENT_INSTRUCTIONS_URL}) before using snapshot mode.`,
         tags: ["Scans"],
         externalDocs: {

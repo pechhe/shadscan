@@ -681,7 +681,9 @@ const createProgram = (): Command => {
 
   program
     .name("shadscan")
-    .description("Audit a React shadcn app for missing UI fundamentals.")
+    .description(
+      "Audit a React or Svelte shadcn app for missing UI fundamentals."
+    )
     .version(VERSION)
     .argument("[path]", "Project directory to scan.", ".")
     .addOption(

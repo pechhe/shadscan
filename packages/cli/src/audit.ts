@@ -378,6 +378,7 @@ const AuditReportSchema = z.object({
     adapter: z.enum([
       "astro-react",
       "generic-react",
+      "generic-svelte",
       "laravel-inertia-react",
       /** Workspace scans only: the pooled applications use different adapters. */
       "mixed",
@@ -385,8 +386,10 @@ const AuditReportSchema = z.object({
       "next-hybrid-router",
       "next-pages-router",
       "react-router-framework",
+      "sveltekit",
       "tanstack-start",
       "vite-react",
+      "vite-svelte",
     ]),
     evidence: z.array(z.string()),
   }),
@@ -417,6 +420,8 @@ const AuditReportSchema = z.object({
     next: z.string().nullable(),
     react: z.string().nullable(),
     reactRouter: z.string().nullable(),
+    svelte: z.string().nullable().optional(),
+    svelteKit: z.string().nullable().optional(),
     tanstackStart: z.string().nullable(),
     vite: z.string().nullable(),
   }),

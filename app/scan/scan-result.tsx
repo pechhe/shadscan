@@ -19,14 +19,17 @@ interface ScanResultProps {
 const FRAMEWORK_LABELS = {
   "astro-react": "Astro",
   "generic-react": "React",
+  "generic-svelte": "Svelte",
   "laravel-inertia-react": "Laravel + Inertia",
   mixed: "Multiple frameworks",
   "next-app-router": "Next.js App Router",
   "next-hybrid-router": "Next.js App + Pages Router",
   "next-pages-router": "Next.js Pages Router",
   "react-router-framework": "React Router",
+  sveltekit: "SvelteKit",
   "tanstack-start": "TanStack Start",
   "vite-react": "Vite React",
+  "vite-svelte": "Vite Svelte",
 } as const satisfies Record<
   WebScanCompleteState["result"]["report"]["framework"]["adapter"],
   string

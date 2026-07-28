@@ -24,17 +24,19 @@ interface SafeFileSearch {
 }
 
 const SOURCE_PATTERNS = [
-  "*.{js,jsx,ts,tsx}",
-  "app/**/*.{js,jsx,ts,tsx}",
-  "pages/**/*.{js,jsx,ts,tsx}",
-  "resources/js/**/*.{js,jsx,ts,tsx}",
-  "src/**/*.{js,jsx,ts,tsx}",
+  "*.{js,jsx,ts,tsx,svelte}",
+  "app/**/*.{js,jsx,ts,tsx,svelte}",
+  "pages/**/*.{js,jsx,ts,tsx,svelte}",
+  "resources/js/**/*.{js,jsx,ts,tsx,svelte}",
+  "src/**/*.{js,jsx,ts,tsx,svelte}",
+  "src/app.html",
+  "src/routes/**/*.svelte",
   // Astro templates are read as text for document-shell and island checks;
   // the AST loader's script filter keeps them out of the TypeScript parser.
   "src/**/*.astro",
-  "components/**/*.{js,jsx,ts,tsx}",
-  "lib/**/*.{js,jsx,ts,tsx}",
-  "hooks/**/*.{js,jsx,ts,tsx}",
+  "components/**/*.{js,jsx,ts,tsx,svelte}",
+  "lib/**/*.{js,jsx,ts,tsx,svelte}",
+  "hooks/**/*.{js,jsx,ts,tsx,svelte}",
   "index.html",
 ];
 const STYLE_PATTERNS = [
@@ -42,8 +44,8 @@ const STYLE_PATTERNS = [
   "app/**/*.css",
   "components/**/*.css",
   "resources/css/**/*.css",
-  "src/**/*.css",
-  "styles/**/*.css",
+  "src/**/*.{css,pcss}",
+  "styles/**/*.{css,pcss}",
 ];
 const APP_NON_PAGE_SOURCE_PATTERN =
   /(?:^|[/\\])(?:src[/\\])?app[/\\](?:.*[/\\])?(?:apple-icon|icon|opengraph-image|route|twitter-image)\.[cm]?[jt]sx?$/i;
@@ -62,9 +64,9 @@ const PROJECT_IGNORES = [
   "**/node_modules/**",
   "**/routeTree.gen.ts",
   "**/vendor/**",
-  "**/*.{spec,test}.{js,jsx,ts,tsx}",
-  "**/*.stories.{js,jsx,ts,tsx}",
-  "**/*.generated.{js,jsx,ts,tsx}",
+  "**/*.{spec,test}.{js,jsx,ts,tsx,svelte}",
+  "**/*.stories.{js,jsx,ts,tsx,svelte}",
+  "**/*.generated.{js,jsx,ts,tsx,svelte}",
 ];
 const MAX_PROJECT_FILES = SCAN_SOURCE_LIMITS.maxFiles;
 const MAX_SOURCE_FILE_BYTES = SCAN_SOURCE_LIMITS.maxFileBytes;

@@ -544,6 +544,46 @@ const evaluateInertiaMetadata = async (
   );
 };
 
+const evaluateSvelteKitMetadata = async (
+  project: ProjectDiscovery
+): Promise<AuditRuleResult> => {
+  const routesDir = project.paths.routesDir;
+
+  if (!routesDir) {
+    return notApplicable("No SvelteKit routes directory was found.");
+  }
+
+  const resolvedRoutesDir = path.resolve(routesDir);
+  const files = (await getProjectSourceFiles(project)).filter((file) => {
+    const relativePath = path.relative(resolvedRoutesDir, file.path);
+    return (
+      relativePath !== ".." &&
+      !relativePath.startsWith(`..${path.sep}`) &&
+      !path.isAbsolute(relativePath) &&
+      file.path.endsWith(".svelte")
+    );
+  });
+  const completeFile = files.find(
+    (file) =>
+      HTML_TITLE_PATTERN.test(file.content) &&
+      HTML_DESCRIPTION_PATTERN.test(file.content)
+  );
+
+  if (completeFile) {
+    return pass(
+      "SvelteKit route metadata includes a non-empty title and description.",
+      completeFile.path,
+      getTextLineNumber(completeFile.content, HTML_TITLE_PATTERN)
+    );
+  }
+
+  return fail(
+    "SvelteKit routes do not provide both a non-empty title and description.",
+    "Add a `<svelte:head>` block with a meaningful `<title>` and description meta tag.",
+    { filePath: files[0]?.path }
+  );
+};
+
 const evaluateHtmlMetadata = async (
   project: ProjectDiscovery
 ): Promise<AuditRuleResult> => {
@@ -625,6 +665,10 @@ const metadataTitleDescriptionCompleteRule: AuditRule = {
   id: "metadata-title-description-complete",
   maxScore: 3,
   run: async ({ project }) => {
+    if (project.versions.svelteKit && project.paths.routesDir) {
+      return evaluateSvelteKitMetadata(project);
+    }
+
     if (project.versions.next && project.paths.appDir) {
       const appResult = await evaluateNextMetadata(project);
 

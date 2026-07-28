@@ -194,6 +194,62 @@ describe("discoverProject", () => {
     expect(project.versions.vite).toBe("7.2.0");
   });
 
+  it("detects a SvelteKit shadcn-svelte app", async () => {
+    const rootDir = await createFixture();
+    await writePackageJson(rootDir, {
+      dependencies: {
+        "@sveltejs/kit": "2.48.0",
+        svelte: "5.54.0",
+      },
+    });
+    await writeComponentsJson(rootDir);
+    await writeFixtureFile(
+      rootDir,
+      "src/app.html",
+      '<html lang="en"><body>%sveltekit.body%</body></html>\n'
+    );
+    await writeFixtureFile(
+      rootDir,
+      "src/routes/+page.svelte",
+      "<h1>Hello</h1>\n"
+    );
+
+    const project = await discoverProject(rootDir);
+
+    expect(project.framework.adapter).toBe("sveltekit");
+    expect(project.framework.evidence).toEqual([
+      "sveltekit dependency found",
+      "routes directory found at src/routes",
+    ]);
+    expect(project.paths.routesDir).toBe(path.join(rootDir, "src", "routes"));
+    expect(project.paths.svelteAppHtml).toBe(
+      path.join(rootDir, "src", "app.html")
+    );
+    expect(project.versions.svelte).toBe("5.54.0");
+    expect(project.versions.svelteKit).toBe("2.48.0");
+  });
+
+  it("detects a Vite Svelte app", async () => {
+    const rootDir = await createFixture();
+    await writePackageJson(rootDir, {
+      dependencies: { svelte: "5.54.0" },
+      devDependencies: { vite: "7.2.0" },
+    });
+    await writeComponentsJson(rootDir);
+    await writeFixtureFile(rootDir, "index.html", '<div id="app"></div>\n');
+    await writeFixtureFile(
+      rootDir,
+      "src/main.ts",
+      'import App from "./App.svelte";\n'
+    );
+    await writeFixtureFile(rootDir, "src/App.svelte", "<h1>Hello</h1>\n");
+
+    const project = await discoverProject(rootDir);
+
+    expect(project.framework.adapter).toBe("vite-svelte");
+    expect(project.paths.viteEntry).toBe(path.join(rootDir, "src", "main.ts"));
+  });
+
   it("detects a React Router framework mode app", async () => {
     const rootDir = await createFixture();
     await writePackageJson(rootDir, {

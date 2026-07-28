@@ -20,7 +20,7 @@
   <a href="https://www.shadscan.com/sponsors">Sponsor</a>
 </p>
 
-Shadscan inspects a React shadcn app, scores its UI fundamentals from 0 to 100,
+Shadscan inspects a React or shadcn-svelte app, scores its UI fundamentals from 0 to 100,
 and shows the evidence behind every finding.
 
 It catches the product details that are easy to postpone: command menus, theme

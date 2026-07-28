@@ -8,11 +8,15 @@ const ROBOTS_PATTERNS = [
   "app/robots.{js,ts}",
   "src/app/robots.{js,ts}",
   "public/robots.txt",
+  "static/robots.txt",
+  "src/routes/robots.txt/+server.{js,ts}",
 ];
 const SITEMAP_PATTERNS = [
   "app/sitemap.{js,ts}",
   "src/app/sitemap.{js,ts}",
   "public/sitemap.xml",
+  "static/sitemap.xml",
+  "src/routes/sitemap.xml/+server.{js,ts}",
 ];
 
 const publicAppSeoFilesPresentRule: AuditRule = {
@@ -20,11 +24,13 @@ const publicAppSeoFilesPresentRule: AuditRule = {
     "astro-react",
     "laravel-inertia-react",
     "react-router-framework",
+    "sveltekit",
     "next-app-router",
     "next-hybrid-router",
     "next-pages-router",
     "tanstack-start",
     "vite-react",
+    "vite-svelte",
   ],
   category: "production-polish",
   confidence: "low",

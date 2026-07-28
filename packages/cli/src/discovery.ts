@@ -7,14 +7,17 @@ type JsonObject = Record<string, unknown>;
 
 type FrameworkAdapter =
   | "astro-react"
+  | "generic-react"
+  | "generic-svelte"
   | "laravel-inertia-react"
   | "next-app-router"
   | "next-hybrid-router"
   | "next-pages-router"
   | "react-router-framework"
+  | "sveltekit"
   | "tanstack-start"
   | "vite-react"
-  | "generic-react";
+  | "vite-svelte";
 
 type Confidence = "high" | "medium" | "low";
 type PackageManager = "bun" | "npm" | "pnpm" | "unknown" | "yarn";
@@ -50,6 +53,7 @@ interface ProjectPaths {
   reactRouterRoot: string | null;
   routesDir: string | null;
   srcDir: string | null;
+  svelteAppHtml?: string | null;
   tailwindCss: string | null;
   tsconfig: string | null;
   viteEntry: string | null;
@@ -62,6 +66,8 @@ interface ProjectVersions {
   next: string | null;
   react: string | null;
   reactRouter: string | null;
+  svelte?: string | null;
+  svelteKit?: string | null;
   tanstackStart: string | null;
   vite: string | null;
 }
@@ -431,8 +437,11 @@ const detectViteEntry = async (rootDir: string): Promise<string | null> => {
   const entryCandidates = [
     path.join(rootDir, "src", "main.tsx"),
     path.join(rootDir, "src", "main.jsx"),
+    path.join(rootDir, "src", "main.ts"),
+    path.join(rootDir, "src", "main.js"),
     path.join(rootDir, "src", "App.tsx"),
     path.join(rootDir, "src", "App.jsx"),
+    path.join(rootDir, "src", "App.svelte"),
   ];
 
   for (const entryCandidate of entryCandidates) {
@@ -442,6 +451,11 @@ const detectViteEntry = async (rootDir: string): Promise<string | null> => {
   }
 
   return null;
+};
+
+const detectSvelteAppHtml = async (rootDir: string): Promise<string | null> => {
+  const appHtml = path.join(rootDir, "src", "app.html");
+  return (await fileExists(appHtml)) ? appHtml : null;
 };
 
 const detectTailwindCss = async (
@@ -480,6 +494,29 @@ interface DetectFrameworkOptions {
   routesDir: string | null;
   viteEntry: string | null;
 }
+
+const detectSvelteKitFramework = (
+  { dependencies, rootDir, routesDir }: DetectFrameworkOptions,
+  fallthroughEvidence: string[]
+): FrameworkDiscovery | null => {
+  if (dependencies["@sveltejs/kit"] && routesDir) {
+    return {
+      adapter: "sveltekit",
+      evidence: [
+        "sveltekit dependency found",
+        `routes directory found at ${path.relative(rootDir, routesDir)}`,
+      ],
+    };
+  }
+
+  if (dependencies["@sveltejs/kit"]) {
+    fallthroughEvidence.push(
+      "sveltekit dependency found but no routes directory (src/routes or app/routes) exists"
+    );
+  }
+
+  return null;
+};
 
 const detectNextFramework = ({
   appDir,
@@ -652,6 +689,7 @@ const detectFramework = (
   const evidence: string[] = [];
 
   const framework =
+    detectSvelteKitFramework(options, evidence) ??
     detectNextFramework(options) ??
     detectLaravelInertiaFramework(options, evidence) ??
     detectTanstackStartFramework(options, evidence) ??
@@ -662,6 +700,16 @@ const detectFramework = (
     return framework;
   }
 
+  if (dependencies.vite && dependencies.svelte && viteEntry) {
+    evidence.push("vite and svelte dependencies found");
+    evidence.push(`vite entry found at ${path.relative(rootDir, viteEntry)}`);
+
+    return {
+      adapter: "vite-svelte",
+      evidence,
+    };
+  }
+
   if (dependencies.vite && dependencies.react && viteEntry) {
     evidence.push("vite and react dependencies found");
     evidence.push(`vite entry found at ${path.relative(rootDir, viteEntry)}`);
@@ -670,6 +718,11 @@ const detectFramework = (
       adapter: "vite-react",
       evidence,
     };
+  }
+
+  if (dependencies.svelte) {
+    evidence.push("svelte dependency found");
+    return { adapter: "generic-svelte", evidence };
   }
 
   if (dependencies.react) {
@@ -684,17 +737,24 @@ const detectFramework = (
   };
 };
 
-const assertReactDependency = async (
+const hasSupportedUiDependency = (
+  dependencies: Record<string, string>
+): boolean =>
+  Boolean(
+    dependencies.react || dependencies.svelte || dependencies["@sveltejs/kit"]
+  );
+
+const assertSupportedUiDependency = async (
   dependencies: Record<string, string>,
   rootDir: string
 ): Promise<void> => {
-  if (dependencies.react) {
+  if (hasSupportedUiDependency(dependencies)) {
     return;
   }
 
   const laravelVersion = await getLaravelFrameworkVersion(rootDir);
   let unsupportedMessage =
-    "The nearest package does not declare React; run shadscan from a React application package.";
+    "The nearest package does not declare React or Svelte; run shadscan from a supported UI application package.";
 
   if (laravelVersion) {
     unsupportedMessage =
@@ -724,6 +784,7 @@ const getReactRouterPaths = (
 /** Filesystem probes every adapter's detection branch reads. */
 const detectFrameworkMarkers = async (rootDir: string) => ({
   appDir: await detectAppDir(rootDir),
+  svelteAppHtml: await detectSvelteAppHtml(rootDir),
   astroPagesDir: await detectAstroPagesDir(rootDir),
   bladeRootView: await detectBladeRootView(rootDir),
   hasArtisan: await fileExists(path.join(rootDir, "artisan")),
@@ -736,36 +797,49 @@ const detectFrameworkMarkers = async (rootDir: string) => ({
   viteEntry: await detectViteEntry(rootDir),
 });
 
+const readShadcnConfig = async (
+  rootDir: string
+): Promise<{
+  config: JsonObject | undefined;
+  confidence: Confidence;
+  warnings: string[];
+}> => {
+  const componentsJsonPath = path.join(rootDir, "components.json");
+  const warnings: string[] = [];
+
+  if (!(await fileExists(componentsJsonPath))) {
+    warnings.push(
+      "components.json was not found; shadcn detection confidence is low."
+    );
+    return { config: undefined, confidence: "low", warnings };
+  }
+
+  const { errors, value } = await readJsonc(componentsJsonPath);
+  if (errors.length > 0 || !value) {
+    warnings.push("components.json exists but could not be parsed.");
+    return { config: undefined, confidence: "low", warnings };
+  }
+
+  return { config: value, confidence: "high", warnings };
+};
+
 const discoverProject = async (
   cwd: string,
   options: DiscoverProjectOptions = {}
 ): Promise<ProjectDiscovery> => {
   const rootDir = await findProjectRoot(cwd, options.filesystemRoot);
+  const componentsJsonPath = path.join(rootDir, "components.json");
   const packageJsonPath = path.join(rootDir, "package.json");
   const packageJson = await readJson(packageJsonPath);
   const dependencies = getDependencies(packageJson);
 
-  await assertReactDependency(dependencies, rootDir);
+  await assertSupportedUiDependency(dependencies, rootDir);
 
-  const warnings: string[] = [];
-  const componentsJsonPath = path.join(rootDir, "components.json");
-  let shadcnConfig: JsonObject | undefined;
-  let shadcnConfidence: Confidence = "low";
-
-  if (await fileExists(componentsJsonPath)) {
-    const { errors, value } = await readJsonc(componentsJsonPath);
-
-    if (errors.length > 0 || !value) {
-      warnings.push("components.json exists but could not be parsed.");
-    } else {
-      shadcnConfig = value;
-      shadcnConfidence = "high";
-    }
-  } else {
-    warnings.push(
-      "components.json was not found; shadcn detection confidence is low."
-    );
-  }
+  const {
+    config: shadcnConfig,
+    confidence: shadcnConfidence,
+    warnings,
+  } = await readShadcnConfig(rootDir);
 
   const {
     appDir,
@@ -778,6 +852,7 @@ const discoverProject = async (
     reactRouterConfigPresent,
     reactRouterRoot,
     routesDir,
+    svelteAppHtml,
     viteEntry,
   } = await detectFrameworkMarkers(rootDir);
   const framework = detectFramework({
@@ -824,6 +899,7 @@ const discoverProject = async (
       ...getReactRouterPaths(framework.adapter, rootDir, reactRouterRoot),
       routesDir,
       srcDir: (await fileExists(srcDir)) ? srcDir : null,
+      svelteAppHtml,
       tailwindCss,
       tsconfig: (await fileExists(tsconfig)) ? tsconfig : null,
       viteEntry,
@@ -846,6 +922,8 @@ const discoverProject = async (
       next: dependencies.next ?? null,
       react: dependencies.react ?? null,
       reactRouter: dependencies["react-router"] ?? null,
+      svelte: dependencies.svelte ?? null,
+      svelteKit: dependencies["@sveltejs/kit"] ?? null,
       tanstackStart: dependencies["@tanstack/react-start"] ?? null,
       vite: dependencies.vite ?? null,
     },

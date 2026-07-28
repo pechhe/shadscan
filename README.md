@@ -20,7 +20,7 @@
   <a href="https://www.shadscan.com/sponsors">Sponsor</a>
 </p>
 
-Shadscan inspects a React shadcn app, scores its UI fundamentals from 0 to 100,
+Shadscan inspects a React or shadcn-svelte app, scores its UI fundamentals from 0 to 100,
 and shows the evidence behind every finding. It catches the product details
 that are easy to postpone: command menus, theme shortcuts, route states,
 accessible controls, form feedback, metadata, mobile behavior, and more.
@@ -193,13 +193,13 @@ pretending static analysis can prove rendered behavior.
 
 Rules only run where they apply. Shadscan supports Next.js App Router, Pages
 Router, hybrid Next.js projects, React Router framework mode, TanStack Start,
-Laravel with Inertia and React, Astro with React islands, Vite React, and
-generic React applications.
+Laravel with Inertia and React, Astro with React islands, SvelteKit,
+Vite React, Vite Svelte, and generic React or Svelte applications.
 
 ### Monorepos
 
-Run shadscan at a workspace root and it audits every React application it
-finds, pooling their findings into one score. The report lists each package
+Run shadscan at a workspace root and it audits every React or Svelte application
+it finds, pooling their findings into one score. The report lists each package
 with its own score so the pooled number is explicable, and `--list-projects`
 prints that list without scanning.
 

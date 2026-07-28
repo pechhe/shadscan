@@ -97,6 +97,8 @@ const PACKAGE_IGNORES = [
 /** Adapters that only win detection when the package owns a document shell. */
 const APPLICATION_ADAPTERS = new Set<FrameworkAdapter>([
   "astro-react",
+  "sveltekit",
+  "vite-svelte",
   "laravel-inertia-react",
   "next-app-router",
   "next-hybrid-router",
@@ -150,9 +152,9 @@ const hasAppEntry = async (projectDir: string): Promise<boolean> => {
 };
 
 /**
- * A React library scores zero on every document-shell rule it should never
- * satisfy, so pooling it with applications would punish a repository for
- * owning a design system. Classification decides pooling and is therefore
+ * A component library scores zero on every document-shell rule it should
+ * never satisfy, so pooling it with applications would punish a repository
+ * for owning a design system. Classification decides pooling and is therefore
  * always reported with its reason rather than applied silently.
  *
  * The deciding signal is an application entry point, not a `main`/`exports`
@@ -218,8 +220,8 @@ const getSkipReason = (error: unknown): string => {
 
 /**
  * Enumerates every package in the tree that shadscan can audit. Packages that
- * cannot be discovered — no React, unreadable manifest — become `skipped`
- * entries so one bad package never fails a workspace run.
+ * cannot be discovered — no supported UI dependency, unreadable manifest —
+ * become `skipped` entries so one bad package never fails a workspace run.
  */
 const discoverWorkspace = async (
   rootDir: string,

@@ -29,6 +29,10 @@ const MODULE_CANDIDATE_SUFFIXES = [
   "/index.tsx",
   "/index.js",
   "/index.jsx",
+  ".svelte",
+  ".svelte.ts",
+  ".svelte.js",
+  "/index.svelte",
 ] as const;
 
 const getPathMappings = (
@@ -111,6 +115,20 @@ const mappingTargetExists = (
   return host.pathExists(path.resolve(basePath, targetRoot));
 };
 
+const isResolvableSvelteAlias = (
+  alias: string,
+  rootDir: string,
+  host: ConfinedTypeScriptHost
+): boolean => {
+  if (!(alias === "$lib" || alias.startsWith("$lib/"))) {
+    return false;
+  }
+
+  const suffix = alias === "$lib" ? "" : alias.slice("$lib/".length);
+  const libPath = path.resolve(rootDir, "src", "lib", suffix);
+  return host.pathExists(libPath) || targetExists(libPath, host);
+};
+
 const isResolvableAlias = (
   alias: string,
   rootDir: string,
@@ -138,12 +156,28 @@ const isResolvableAlias = (
   return false;
 };
 
+const isResolvableProjectAlias = (
+  alias: string,
+  projectRoot: string,
+  host: ConfinedTypeScriptHost,
+  isSvelteProject: boolean,
+  pathMappings: ReturnType<typeof getPathMappings>
+): boolean => {
+  if (isSvelteProject && isResolvableSvelteAlias(alias, projectRoot, host)) {
+    return true;
+  }
+
+  return pathMappings
+    ? isResolvableAlias(alias, projectRoot, host, pathMappings)
+    : false;
+};
+
 const componentsAliasesResolveRule: AuditRule = {
   adapters: ["core"],
   category: "foundation",
   confidence: "high",
   description:
-    "Checks whether shadcn aliases can be resolved through TypeScript or JavaScript path mappings.",
+    "Checks whether shadcn aliases resolve through TypeScript/JavaScript path mappings or SvelteKit's $lib alias.",
   id: "components-aliases-resolve",
   maxScore: 2,
   run: ({ filesystemRoot, project }) => {
@@ -161,8 +195,13 @@ const componentsAliasesResolveRule: AuditRule = {
       project.paths.tsconfig,
       host
     );
+    const isSvelteProject = [
+      "sveltekit",
+      "vite-svelte",
+      "generic-svelte",
+    ].includes(project.framework.adapter);
 
-    if (!pathMappings) {
+    if (!(pathMappings || isSvelteProject)) {
       return fail(
         "Shadcn aliases are configured, but no tsconfig.json or jsconfig.json path mappings were found.",
         "Add compilerOptions.paths entries that resolve the aliases declared in components.json.",
@@ -173,9 +212,15 @@ const componentsAliasesResolveRule: AuditRule = {
     const unresolvedAliases: typeof aliases = [];
 
     for (const aliasEntry of aliases) {
-      if (
-        !isResolvableAlias(aliasEntry[1], project.rootDir, host, pathMappings)
-      ) {
+      const resolves = isResolvableProjectAlias(
+        aliasEntry[1],
+        project.rootDir,
+        host,
+        isSvelteProject,
+        pathMappings
+      );
+
+      if (!resolves) {
         unresolvedAliases.push(aliasEntry);
       }
     }
@@ -188,13 +233,16 @@ const componentsAliasesResolveRule: AuditRule = {
       return fail(
         `Shadcn aliases without resolvable mapping roots: ${names}.`,
         "Add matching compilerOptions.paths entries whose mapping roots exist, or change the aliases in components.json.",
-        { filePath: pathMappings.configPath }
+        {
+          filePath:
+            pathMappings?.configPath ?? project.shadcn.configPath ?? undefined,
+        }
       );
     }
 
     return pass(
       `All ${aliases.length} shadcn aliases have resolvable configured mapping roots.`,
-      pathMappings.configPath
+      pathMappings?.configPath ?? project.shadcn.configPath ?? undefined
     );
   },
   severity: "warning",
