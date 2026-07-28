@@ -1,4 +1,4 @@
-const AGENT_AUDIT_PROMPT = `Audit this project's UI with shadscan — a deterministic auditor for React shadcn apps that flags accessibility, state, form, and composition issues.
+const AGENT_AUDIT_PROMPT = `Audit this project's UI with shadscan — a deterministic auditor for React or Svelte shadcn apps that flags accessibility, state, form, and composition issues.
 
 From the repo root, generate the agent handoff:
 npx @shadscan/cli --prompt

@@ -59,13 +59,51 @@ type JsxAttributeValue =
   | { kind: "static"; value: StaticJsxValue };
 
 const UPPERCASE_COMPONENT_PATTERN = /^[A-Z]/;
-const SCRIPT_FILE_PATTERN = /\.[jt]sx?$/;
+const SCRIPT_FILE_PATTERN = /(?:\.[jt]sx?|\.svelte)$/;
+const SVELTE_SCRIPT_TAG_PATTERN = /<script\b[^>]*>|<\/script>/gi;
+const SVELTE_STYLE_TAG_PATTERN = /<style\b[^>]*>[\s\S]*?<\/style>/gi;
 const parsedSourceFileCache = new WeakMap<
   ProjectDiscovery,
   Promise<ParsedSourceFile[]>
 >();
 
+const capitalize = (value: string): string =>
+  value.length === 0 ? value : `${value[0]?.toUpperCase()}${value.slice(1)}`;
+
+/**
+ * Svelte templates are intentionally lowered to JSX only for the existing
+ * static checks. The original source remains the evidence file; this small
+ * compatibility layer lets element and attribute rules inspect native HTML
+ * and shadcn-svelte component markup without adding a compiler dependency.
+ */
+const getSvelteTsxContent = (content: string): string =>
+  content
+    .replace(SVELTE_STYLE_TAG_PATTERN, (match) => match.replace(/[^\n]/g, " "))
+    .replace(SVELTE_SCRIPT_TAG_PATTERN, "")
+    .replace(/<!--[\s\S]*?-->/g, "")
+    .replace(/<svelte:([\w-]+)/g, "<svelte$1")
+    .replace(/<\/svelte:([\w-]+)>/g, "</svelte$1>")
+    .replace(
+      /\bon:([\w-]+)(?:\|[\w-]+)*/g,
+      (_, name: string) => `on${capitalize(name)}`
+    )
+    .replace(
+      /\b(bind|class|style|use|transition|in|out|let):([\w-]+)/g,
+      (_, kind: string, name: string) => `${kind}${capitalize(name)}`
+    )
+    .replace(
+      /\{#(?:if|each|await|key|snippet)[^}]*\}|\{:\s*(?:else(?:\s+if[^}]*)?|then|catch)[^}]*\}|\{\/(?:if|each|await|key|snippet)\}/g,
+      ""
+    )
+    .replace(/\{@(?:const|debug)[^}]*\}/g, "")
+    .replace(/\{@(?:html|render)\s+([^}]+)\}/g, "{$1}")
+    .replace(/\{\.\.\.([^}]+)\}/g, "{svelteSpread($1)}");
+
 const getScriptKind = (filePath: string): ScriptKind => {
+  if (filePath.endsWith(".svelte")) {
+    return ScriptKind.TSX;
+  }
+
   if (filePath.endsWith(".tsx")) {
     return ScriptKind.TSX;
   }
@@ -91,7 +129,9 @@ const loadParsedSourceFiles = async (
       filePath: file.path,
       sourceFile: createSourceFile(
         file.path,
-        file.content,
+        file.path.endsWith(".svelte")
+          ? getSvelteTsxContent(file.content)
+          : file.content,
         ScriptTarget.Latest,
         true,
         getScriptKind(file.path)

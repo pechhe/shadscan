@@ -130,7 +130,7 @@ const scanWorkspace = async (
 
   if (scanned.length === 0) {
     throw new ProjectDiscoveryError(
-      "No auditable React package was found in this workspace; run shadscan from a React application package.",
+      "No auditable React or Svelte package was found in this workspace; run shadscan from a supported UI application package.",
       "UNSUPPORTED_PROJECT"
     );
   }
