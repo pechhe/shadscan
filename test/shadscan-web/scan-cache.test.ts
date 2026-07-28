@@ -1,4 +1,4 @@
-import { BUNDLED_RULESET_VERSION, ENGINE_VERSION } from "@shadscan/cli";
+import { BUNDLED_RULESET_VERSION, ENGINE_VERSION } from "@shadscan-svelte/cli";
 import { describe, expect, it, vi } from "vitest";
 import type { HostedScanResponse } from "../../lib/shadscan-api/contracts";
 import {

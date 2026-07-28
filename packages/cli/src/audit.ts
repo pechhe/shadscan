@@ -653,7 +653,7 @@ const PACKAGE_EXECUTORS = {
   pnpm: (packageSpecifier: string) => `pnpm dlx ${packageSpecifier}`,
   unknown: (packageSpecifier: string) => `npx --yes ${packageSpecifier}`,
   yarn: (packageSpecifier: string) =>
-    `yarn dlx --package ${packageSpecifier} shadscan`,
+    `yarn dlx --quiet --package ${packageSpecifier} shadscan-svelte`,
 } as const satisfies Record<
   ProjectDiscovery["packageManager"],
   (packageSpecifier: string) => string
@@ -908,7 +908,7 @@ const getShadscanCommand = (
   const categoryOption = category ? ` --category ${category}` : "";
   const projectArgument = getSelectedProjectArgument(project);
   const projectOption = projectArgument ? ` ${projectArgument}` : "";
-  const packageSpecifier = `@shadscan/cli@${ENGINE_VERSION}`;
+  const packageSpecifier = `@shadscan-svelte/cli@${ENGINE_VERSION}`;
   return `${executor(packageSpecifier)}${projectOption} --json${categoryOption}`;
 };
 

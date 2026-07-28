@@ -67,7 +67,7 @@ const nextConfig: NextConfig = {
     "/api/queues/shadscan": [...SCANNER_TRACE_INCLUDES],
     "/v1/scans": [...SCANNER_TRACE_INCLUDES],
   },
-  serverExternalPackages: ["@shadscan/cli"],
+  serverExternalPackages: ["@shadscan-svelte/cli"],
   turbopack: {
     ignoreIssue: [{ path: "**/next.config.ts" }],
   },

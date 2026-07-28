@@ -163,9 +163,9 @@ const SIMPLE_GIT_HOOKS_WRAPPER_PATTERN = /simple-git-hooks/iu;
 const PRE_COMMIT_WRAPPER_PATTERN =
   /\bpre_commit\b|INSTALL_PYTHON|pre-commit\.com/iu;
 const SHADSCAN_TOKEN_PATTERN =
-  /(?:^|[\s"'`;&|()])(?:[^\s"'`;&|()]*(?:\/|\\))?shadscan(?:\.cmd)?(?=$|[\s"'`;&|()])|@shadscan\/cli@[0-9A-Za-z.+-]+/;
+  /(?:^|[\s"'`;&|()])(?:[^\s"'`;&|()]*(?:\/|\\))?shadscan(?:\.cmd)?(?=$|[\s"'`;&|()])|@shadscan-svelte\/cli@[0-9A-Za-z.+-]+/;
 const DIRECT_SHADSCAN_COMMAND_PATTERN =
-  /^(?:(?:[^\s"'`;&|()]+(?:\/|\\))?shadscan(?:\.cmd)?|bunx\s+@shadscan\/cli@[0-9A-Za-z.+-]+|pnpm\s+dlx\s+@shadscan\/cli@[0-9A-Za-z.+-]+|npx\s+--yes\s+@shadscan\/cli@[0-9A-Za-z.+-]+|yarn\s+dlx\s+--quiet\s+--package\s+@shadscan\/cli@[0-9A-Za-z.+-]+\s+shadscan)(?=\s|$)/u;
+  /^(?:(?:[^\s"'`;&|()]+(?:\/|\\))?shadscan(?:\.cmd)?|bunx\s+@shadscan-svelte\/cli@[0-9A-Za-z.+-]+|pnpm\s+dlx\s+@shadscan-svelte\/cli@[0-9A-Za-z.+-]+|npx\s+--yes\s+@shadscan-svelte\/cli@[0-9A-Za-z.+-]+|yarn\s+dlx\s+--quiet\s+--package\s+@shadscan-svelte\/cli@[0-9A-Za-z.+-]+\s+shadscan)(?=\s|$)/u;
 const BLOCKING_EXIT_SUFFIX_PATTERN = /\s+\|\|\s+exit\s+\$\?\s*$/u;
 const SIMPLE_SHELL_COMMAND_PATTERN =
   /^[A-Za-z0-9_./:@+=-]+(?:\s+[A-Za-z0-9_./:@+=-]+)*$/u;
@@ -1337,7 +1337,7 @@ const createAuditCommand = ({
   score: number;
   version: string;
 }): string => {
-  const packageSpecifier = `@shadscan/cli@${version}`;
+  const packageSpecifier = `@shadscan-svelte/cli@${version}`;
   const relativeProjectPath = path
     .relative(gitRoot, projectRoot)
     .split(path.sep)
@@ -1543,7 +1543,7 @@ const createPreCommitInstallPlan = async (
       reason:
         "The package manager is unknown, so Shadscan cannot produce a reliable hook command.",
       steps: [
-        `Add @shadscan/cli@${options.version} with the repository's package manager.`,
+        `Add @shadscan-svelte/cli@${options.version} with the repository's package manager.`,
         `Run shadscan --fail-under ${options.score} --no-roast --no-interactive from pre-commit.`,
       ],
     });
@@ -1677,7 +1677,7 @@ const formatPreCommitInstallPlan = (plan: PreCommitInstallPlan): string => {
     "Shadscan pre-commit plan",
     `  Mode: ${plan.mode}`,
     `  Floor: ${plan.score}/100`,
-    `  CLI: @shadscan/cli@${plan.version}`,
+    `  CLI: @shadscan-svelte/cli@${plan.version}`,
     `  Manager: ${plan.manager ?? "none"}`,
     `  Reason: ${sanitizeTerminalText(plan.reason)}`,
   ];

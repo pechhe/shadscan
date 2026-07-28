@@ -3,7 +3,7 @@ import {
   AUDIT_REPORT_SCHEMA_VERSION,
   BUNDLED_RULESET_VERSION,
   ENGINE_VERSION,
-} from "@shadscan/cli";
+} from "@shadscan-svelte/cli";
 import type { WebScanCompleteState } from "@/lib/shadscan-web/types";
 
 const THEME_SHORTCUT_EVIDENCE = [

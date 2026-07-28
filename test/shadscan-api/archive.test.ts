@@ -3,7 +3,7 @@ import { mkdtemp, readFile, rm, stat } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import path from "node:path";
 import { gzipSync } from "node:zlib";
-import { classifyScanInputPath } from "@shadscan/cli";
+import { classifyScanInputPath } from "@shadscan-svelte/cli";
 import { type Headers, pack } from "tar-stream";
 import { afterEach, describe, expect, it } from "vitest";
 import {

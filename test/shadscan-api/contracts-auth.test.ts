@@ -2,7 +2,7 @@ import {
   AGENT_PROMPT_VERSION,
   AUDIT_CATEGORIES,
   AUDIT_REPORT_SCHEMA_VERSION,
-} from "@shadscan/cli";
+} from "@shadscan-svelte/cli";
 import { describe, expect, it, vi } from "vitest";
 import type { DatabaseRateLimitRule } from "../../lib/rate-limit/database";
 import {

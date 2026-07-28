@@ -131,7 +131,7 @@ describe("renderAgentPrompt", () => {
     expect(prompt).toContain('"pnpm check"');
     expect(prompt).toContain('"pnpm build"');
     expect(prompt).toContain(
-      `"shadscanCommand": "pnpm dlx @shadscan/cli@${report.engineVersion} --json"`
+      `"shadscanCommand": "pnpm dlx @shadscan-svelte/cli@${report.engineVersion} --json"`
     );
     expect(prompt).toContain(
       "A verified-no-change outcome is valid for a verify item."

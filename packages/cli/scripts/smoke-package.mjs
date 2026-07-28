@@ -246,7 +246,7 @@ try {
   await writeFile(
     importCheckPath,
     [
-      'import { AUDIT_REPORT_SCHEMA_VERSION, RULE_CATALOG, scanProject } from "@shadscan/cli";',
+      'import { AUDIT_REPORT_SCHEMA_VERSION, RULE_CATALOG, scanProject } from "@shadscan-svelte/cli";',
       `if (AUDIT_REPORT_SCHEMA_VERSION !== ${JSON.stringify(report.schemaVersion)} || RULE_CATALOG.length !== 59 || typeof scanProject !== "function") {`,
       '  throw new Error("The installed library exports are incomplete.");',
       "}",

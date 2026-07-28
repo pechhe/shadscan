@@ -6,11 +6,11 @@ import { AGENT_AUDIT_PROMPT } from "@/lib/agent-prompt";
 export function GetStarted() {
   return (
     <CodeBlockCommand
-      bun="bunx @shadscan/cli"
-      npm="npx @shadscan/cli"
-      pnpm="pnpm dlx @shadscan/cli"
+      bun="bunx @shadscan-svelte/cli"
+      npm="npx @shadscan-svelte/cli"
+      pnpm="pnpm dlx @shadscan-svelte/cli"
       prompt={AGENT_AUDIT_PROMPT}
-      yarn="yarn dlx --package @shadscan/cli shadscan"
+      yarn="yarn dlx --quiet --package @shadscan-svelte/cli shadscan-svelte"
     />
   );
 }

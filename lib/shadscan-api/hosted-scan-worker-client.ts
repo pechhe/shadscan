@@ -1,7 +1,7 @@
 import path from "node:path";
 import { pathToFileURL } from "node:url";
 import { Worker } from "node:worker_threads";
-import { AGENT_PROMPT_VERSION, AuditReportSchema } from "@shadscan/cli";
+import { AGENT_PROMPT_VERSION, AuditReportSchema } from "@shadscan-svelte/cli";
 import { z } from "zod";
 import type { MaterializedScanSource } from "./contracts";
 import { HostedScanError } from "./errors";

@@ -272,7 +272,7 @@ describe("runAudit", () => {
     );
     expect(report.agentHandoff.verification).toEqual({
       projectGates: ["pnpm check", "pnpm build"],
-      shadscanCommand: `pnpm dlx @shadscan/cli@${ENGINE_VERSION} --json`,
+      shadscanCommand: `pnpm dlx @shadscan-svelte/cli@${ENGINE_VERSION} --json`,
     });
   });
 
@@ -452,7 +452,7 @@ describe("runAudit", () => {
       "pnpm --dir './apps/web; touch compromised' build",
     ]);
     expect(report.agentHandoff.verification.shadscanCommand).toBe(
-      `pnpm dlx @shadscan/cli@${ENGINE_VERSION} './apps/web; touch compromised' --json`
+      `pnpm dlx @shadscan-svelte/cli@${ENGINE_VERSION} './apps/web; touch compromised' --json`
     );
     expect(report.agentHandoff.context).toContain(
       "Selected project directory: apps/web; touch compromised (relative to the package-manager root)"
@@ -506,7 +506,7 @@ describe("runAudit", () => {
     });
 
     expect(report.agentHandoff.verification.shadscanCommand).toBe(
-      `bunx @shadscan/cli@${ENGINE_VERSION} --json`
+      `bunx @shadscan-svelte/cli@${ENGINE_VERSION} --json`
     );
   });
 
@@ -518,7 +518,7 @@ describe("runAudit", () => {
     });
 
     expect(report.agentHandoff.verification.shadscanCommand).toBe(
-      `yarn dlx --package @shadscan/cli@${ENGINE_VERSION} shadscan --json`
+      `yarn dlx --quiet --package @shadscan-svelte/cli@${ENGINE_VERSION} shadscan-svelte --json`
     );
   });
 

@@ -27,7 +27,7 @@ import {
 import { AGENT_AUDIT_PROMPT } from "@/lib/agent-prompt";
 import { DOCS_SECTIONS } from "@/lib/docs-sections";
 
-const SOURCE_COMMAND = "npx @shadscan/cli /path/to/app";
+const SOURCE_COMMAND = "npx @shadscan-svelte/cli /path/to/app";
 interface CommandMenuProps {
   repositoryUrl?: string;
 }

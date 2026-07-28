@@ -6,7 +6,7 @@ import { AGENT_AUDIT_PROMPT } from "@/lib/agent-prompt";
 import { DOCS_SECTIONS } from "@/lib/docs-sections";
 import { createPageMetadata } from "@/lib/site-metadata";
 
-const CLI_PACKAGE = "@shadscan/cli";
+const CLI_PACKAGE = "@shadscan-svelte/cli";
 
 const AGENT_PROMPT =
   "Use $shadscan-pre-commit for this task. Establish the current score before editing, run Shadscan immediately before every commit, and do not commit if the audit is unassessed or below the task floor.";
@@ -112,7 +112,7 @@ const getCliCommands = (cliArguments = "") => {
     bun: `bunx ${CLI_PACKAGE}${suffix}`,
     npm: `npx --yes ${CLI_PACKAGE}${suffix}`,
     pnpm: `pnpm dlx ${CLI_PACKAGE}${suffix}`,
-    yarn: `yarn dlx --quiet --package ${CLI_PACKAGE} shadscan${suffix}`,
+    yarn: `yarn dlx --quiet --package ${CLI_PACKAGE} shadscan-svelte${suffix}`,
   } as const;
 };
 
@@ -481,9 +481,9 @@ export default function DocsPage() {
           <p>
             pnpm 11.15 and newer delays newly published versions through its{" "}
             <code>minimumReleaseAge</code> supply-chain setting, so{" "}
-            <code>pnpm dlx @shadscan/cli</code> can silently resolve to the
+            <code>pnpm dlx @shadscan-svelte/cli</code> can silently resolve to the
             previous release for a few days after a new one ships. Pin the exact
-            version (<code>@shadscan/cli@&lt;version&gt;</code>) to run it
+            version (<code>@shadscan-svelte/cli@&lt;version&gt;</code>) to run it
             immediately, or wait for the delay to pass.
           </p>
           <h3>A stale version keeps running</h3>
