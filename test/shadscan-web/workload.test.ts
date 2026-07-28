@@ -1,4 +1,4 @@
-import { SCAN_SOURCE_LIMITS } from "@shadscan-svelte/cli";
+import { SCAN_SOURCE_LIMITS } from "shadscan-svelte";
 import { describe, expect, it } from "vitest";
 import { DEFAULT_WEB_SOURCE_LIMITS } from "../../lib/shadscan-web/source-config";
 import { classifyWebScanWorkload } from "../../lib/shadscan-web/workload";

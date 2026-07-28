@@ -1,4 +1,4 @@
-import { SCAN_SOURCE_LIMITS } from "@shadscan-svelte/cli";
+import { SCAN_SOURCE_LIMITS } from "shadscan-svelte";
 import { HostedScanError } from "../shadscan-api/errors";
 
 const MEBIBYTE = 1024 * 1024;

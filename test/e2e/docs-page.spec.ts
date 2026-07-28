@@ -22,7 +22,7 @@ test("documents the CLI before the optional agent workflow", async ({
   await expect(page.getByRole("link", { name: "Docs" })).toBeVisible();
   await expect(
     page.locator("article > header").locator('[data-slot="code-block"]')
-  ).toContainText("pnpm dlx @shadscan-svelte/cli");
+  ).toContainText("pnpm dlx shadscan-svelte");
   await expect(
     page.locator("#options dt").getByText("--prompt", { exact: true })
   ).toBeVisible();
@@ -45,11 +45,11 @@ test("documents the CLI before the optional agent workflow", async ({
   const agentPrompt = page.locator("#agent-prompt");
   await agentPrompt.getByRole("tab", { name: "bun", exact: true }).click();
   await expect(agentPrompt.locator('[data-slot="code-block"]')).toContainText(
-    "bunx @shadscan-svelte/cli --prompt"
+    "bunx shadscan-svelte --prompt"
   );
   await agentPrompt.getByRole("tab", { name: "yarn", exact: true }).click();
   await expect(agentPrompt.locator('[data-slot="code-block"]')).toContainText(
-    "yarn dlx --quiet --package @shadscan-svelte/cli shadscan-svelte --prompt"
+    "yarn dlx --quiet --package shadscan-svelte shadscan-svelte --prompt"
   );
 
   await expect(page.locator("#apply")).toContainText("--apply --agent codex");

@@ -3,7 +3,7 @@ import { access, readFile } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
-const PACKAGE_NAME = "@shadscan-svelte/cli";
+const PACKAGE_NAME = "shadscan-svelte";
 const PUBLIC_REGISTRY = "https://registry.npmjs.org/";
 const REPOSITORY_URL = "git+https://github.com/TheOrcDev/shadscan.git";
 const PUBLIC_HOMEPAGE_URL = "https://www.shadscan.com/docs";

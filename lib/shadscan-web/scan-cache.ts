@@ -4,7 +4,7 @@ import {
   AUDIT_REPORT_SCHEMA_VERSION,
   BUNDLED_RULESET_VERSION,
   ENGINE_VERSION,
-} from "@shadscan-svelte/cli";
+} from "shadscan-svelte";
 import { z } from "zod";
 import { getDatabase } from "../db/client";
 import {

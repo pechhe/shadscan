@@ -908,7 +908,7 @@ const getShadscanCommand = (
   const categoryOption = category ? ` --category ${category}` : "";
   const projectArgument = getSelectedProjectArgument(project);
   const projectOption = projectArgument ? ` ${projectArgument}` : "";
-  const packageSpecifier = `@shadscan-svelte/cli@${ENGINE_VERSION}`;
+  const packageSpecifier = `shadscan-svelte@${ENGINE_VERSION}`;
   return `${executor(packageSpecifier)}${projectOption} --json${categoryOption}`;
 };
 

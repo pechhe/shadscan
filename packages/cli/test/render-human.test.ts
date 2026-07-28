@@ -56,7 +56,7 @@ const createReport = (): AuditReport => ({
     verification: {
       projectGates: ["pnpm check", "pnpm build"],
       shadscanCommand:
-        "pnpm dlx @shadscan-svelte/cli@0.0.1 --json --category foundation",
+        "pnpm dlx shadscan-svelte@0.0.1 --json --category foundation",
     },
     workItems: [
       {
@@ -185,7 +185,7 @@ describe("renderHumanReport", () => {
     expect(output).toContain("Missing: metadata configured");
     expect(output).toContain("Agent handoff:");
     expect(output).toContain("Suggested skills: shadscan");
-    expect(output).toContain("shadscan: pnpm dlx @shadscan-svelte/cli@0.0.1");
+    expect(output).toContain("shadscan: pnpm dlx shadscan-svelte@0.0.1");
     expect(output).toContain("Project gate: pnpm check");
     expect(output).toContain("1. [P1] Fix metadata configured");
     expect(output).toContain("Disposition: fix");

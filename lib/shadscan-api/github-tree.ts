@@ -1,5 +1,5 @@
 import path from "node:path";
-import { classifyScanInputPath, type ScanInputRetention } from "@shadscan-svelte/cli";
+import { classifyScanInputPath, type ScanInputRetention } from "shadscan-svelte";
 import { z } from "zod";
 import { HostedScanError } from "./errors";
 import { normalizeArchivePath } from "./path-safety";

@@ -1,7 +1,7 @@
 import { createHash } from "node:crypto";
 import { mkdir, writeFile } from "node:fs/promises";
 import path from "node:path";
-import { SCAN_SOURCE_LIMITS } from "@shadscan-svelte/cli";
+import { SCAN_SOURCE_LIMITS } from "shadscan-svelte";
 import type { ArchiveLimits } from "./archive";
 import { HostedScanError } from "./errors";
 import type { RetainedGitHubTreeEntry } from "./github-tree";

@@ -181,7 +181,7 @@ test("publishes app identity and structured data", async ({ page }) => {
     (entry) => entry["@type"] === "SoftwareApplication"
   );
   expect(softwareApplication?.sameAs).toEqual([
-    "https://www.npmjs.com/package/@shadscan-svelte/cli",
+    "https://www.npmjs.com/package/shadscan-svelte",
   ]);
   const githubLink = page.locator(
     'a[href="https://github.com/TheOrcDev/shadscan"]'

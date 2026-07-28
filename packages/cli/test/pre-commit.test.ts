@@ -159,7 +159,7 @@ describe("pre-commit protection detection", () => {
     const fixture = await createFixture();
     const hookPath = await fixture.write(
       ".git/hooks/pre-commit",
-      "#!/bin/sh\npnpm dlx @shadscan-svelte/cli@0.1.0 --fail-under 92 --no-roast\n",
+      "#!/bin/sh\npnpm dlx shadscan-svelte@0.1.0 --fail-under 92 --no-roast\n",
       0o755
     );
 
@@ -174,7 +174,7 @@ describe("pre-commit protection detection", () => {
 
     await fixture.write(
       ".git/hooks/pre-commit",
-      "#!/bin/sh\npnpm dlx @shadscan-svelte/cli@0.1.0 --json\n",
+      "#!/bin/sh\npnpm dlx shadscan-svelte@0.1.0 --json\n",
       0o755
     );
     const advisoryOnly = await detectPreCommitProtection(fixture);
@@ -440,7 +440,7 @@ describe("pre-commit installation plans", () => {
 
     expect(plan.mode).toBe("automatic");
     expect(plan.command).toBe(
-      "pnpm dlx @shadscan-svelte/cli@0.1.0-rc.2 ./apps/web --fail-under 92 --no-roast --no-interactive"
+      "pnpm dlx shadscan-svelte@0.1.0-rc.2 ./apps/web --fail-under 92 --no-roast --no-interactive"
     );
     expect(plan.changes).toHaveLength(1);
     expect(formatPreCommitInstallPlan(plan)).toContain(
@@ -495,7 +495,7 @@ describe("pre-commit installation plans", () => {
     await applyPreCommitInstallPlan(plan, { confirmed: true });
 
     expect(await readFile(hookPath, "utf8")).toContain(
-      "npx --yes @shadscan-svelte/cli@1.2.3 --fail-under 87 --no-roast --no-interactive"
+      "npx --yes shadscan-svelte@1.2.3 --fail-under 87 --no-roast --no-interactive"
     );
     expect((await stat(hookPath)).mode % 0o1000).toBe(0o750);
   });

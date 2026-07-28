@@ -1,5 +1,5 @@
 {
-  "name": "@shadscan-svelte/cli",
+  "name": "shadscan-svelte",
   "version": "0.7.0",
   "description": "Audit React and Svelte shadcn apps for missing UI fundamentals.",
   "license": "MIT",
