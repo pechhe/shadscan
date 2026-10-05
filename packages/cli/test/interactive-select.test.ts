@@ -1,5 +1,5 @@
 import { Readable } from "node:stream";
-import { describe, expect, it, vi } from "vitest";
+import { describe, expect, it, type Mock, vi } from "vitest";
 import {
   selectFromMenu,
   supportsRawSelection,
@@ -18,7 +18,7 @@ const createFakeInput = () => {
     },
   }) as Readable & {
     isTTY: boolean;
-    setRawMode: ReturnType<typeof vi.fn>;
+    setRawMode: Mock<(mode: boolean) => unknown>;
   };
   input.isTTY = true;
   input.setRawMode = vi.fn();

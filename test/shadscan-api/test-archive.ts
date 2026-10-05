@@ -1,9 +1,11 @@
 import { gzipSync } from "node:zlib";
-import { pack, type Headers as TarHeaders } from "tar-stream";
+import { type Header, pack } from "tar-stream";
+
+type TarHeaderInput = Partial<Header> & Pick<Header, "name">;
 
 interface TestArchiveEntry {
   contents?: Buffer | string;
-  header: TarHeaders;
+  header: TarHeaderInput;
 }
 
 const collectTarStream = async (
@@ -13,7 +15,9 @@ const collectTarStream = async (
   let totalBytes = 0;
 
   for await (const chunk of archive) {
-    const buffer = Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk);
+    const buffer = Buffer.isBuffer(chunk)
+      ? chunk
+      : Buffer.from(chunk as Uint8Array);
     chunks.push(buffer);
     totalBytes += buffer.byteLength;
   }

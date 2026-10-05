@@ -4,7 +4,7 @@ import { tmpdir } from "node:os";
 import path from "node:path";
 import { gzipSync } from "node:zlib";
 import { classifyScanInputPath } from "@shadscan/cli";
-import { type Headers, pack } from "tar-stream";
+import { type Header, pack } from "tar-stream";
 import { afterEach, describe, expect, it } from "vitest";
 import {
   extractTarGzip,
@@ -13,7 +13,7 @@ import {
 
 interface TestArchiveEntry {
   contents?: Buffer | string;
-  header: Headers;
+  header: Partial<Header> & Pick<Header, "name">;
 }
 
 interface TestArchive {
@@ -30,8 +30,9 @@ const collectTarStream = async (
   let totalBytes = 0;
 
   for await (const chunk of archive) {
-    chunks.push(chunk);
-    totalBytes += chunk.byteLength;
+    const buffer = Buffer.from(chunk as Uint8Array);
+    chunks.push(buffer);
+    totalBytes += buffer.byteLength;
   }
 
   return Buffer.concat(chunks, totalBytes);

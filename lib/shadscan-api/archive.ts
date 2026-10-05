@@ -5,7 +5,7 @@ import { Readable, Transform } from "node:stream";
 import { pipeline } from "node:stream/promises";
 import { promisify } from "node:util";
 import { createGunzip, gunzip } from "node:zlib";
-import { extract, type Headers } from "tar-stream";
+import { extract, type Header } from "tar-stream";
 import { HostedScanError } from "./errors";
 import {
   isForbiddenArchivePath,
@@ -91,7 +91,7 @@ const hasErrorCode = (error: unknown): error is Error & { code: string } =>
   error instanceof Error && "code" in error && typeof error.code === "string";
 
 const collectEntry = async (
-  stream: NodeJS.ReadableStream,
+  stream: AsyncIterable<unknown>,
   expectedBytes: number,
   maxFileBytes: number,
   relativePath: string,
@@ -102,7 +102,9 @@ const collectEntry = async (
 
   for await (const rawChunk of stream) {
     signal?.throwIfAborted();
-    const chunk = Buffer.isBuffer(rawChunk) ? rawChunk : Buffer.from(rawChunk);
+    const chunk = Buffer.isBuffer(rawChunk)
+      ? rawChunk
+      : Buffer.from(rawChunk as Uint8Array);
     totalBytes += chunk.byteLength;
     if (totalBytes > maxFileBytes) {
       throw new HostedScanError("An archive file exceeds the size limit.", {
@@ -131,7 +133,7 @@ const collectEntry = async (
 };
 
 const drainEntry = async (
-  stream: NodeJS.ReadableStream,
+  stream: AsyncIterable<unknown>,
   signal?: AbortSignal
 ): Promise<void> => {
   for await (const _chunk of stream) {
@@ -142,7 +144,7 @@ const drainEntry = async (
 };
 
 const trackEntryPath = (
-  header: Headers,
+  header: Header,
   state: ExtractionState,
   options: Required<
     Pick<ExtractArchiveOptions, "forbiddenPathBehavior" | "stripComponents">
@@ -239,7 +241,7 @@ const trackArchivePathShape = (
 };
 
 const planFileEntry = (
-  header: Headers,
+  header: Header,
   destinationPath: string,
   relativePath: string,
   state: ExtractionState,
@@ -278,7 +280,7 @@ const planFileEntry = (
 };
 
 const planArchiveEntry = (
-  header: Headers,
+  header: Header,
   destinationRoot: string,
   state: ExtractionState,
   options: Required<
@@ -346,7 +348,7 @@ const planArchiveEntry = (
 
 const applyArchiveEntryPlan = async (
   plan: ArchiveEntryPlan,
-  stream: NodeJS.ReadableStream,
+  stream: AsyncIterable<unknown>,
   limits: ArchiveLimits,
   signal?: AbortSignal
 ): Promise<void> => {
@@ -413,7 +415,11 @@ const createTarExtractor = (
 
   archive.on(
     "entry",
-    (header: Headers, stream: NodeJS.ReadableStream, next: () => void) => {
+    (
+      header: Header,
+      stream: AsyncIterable<unknown>,
+      next: (error?: Error | null) => void
+    ) => {
       const handleEntry = async (): Promise<void> => {
         options.signal?.throwIfAborted();
         const plan = planArchiveEntry(header, destinationRoot, state, options);
@@ -426,7 +432,7 @@ const createTarExtractor = (
       };
 
       handleEntry()
-        .then(next)
+        .then(() => next())
         .catch((error: unknown) => {
           entryFailure = error;
           archive.destroy(
