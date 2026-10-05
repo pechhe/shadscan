@@ -2,17 +2,6 @@
   "name": "@shadscan/cli",
   "version": "0.7.0",
   "description": "Audit React and Svelte shadcn apps for missing UI fundamentals.",
-  "license": "MIT",
-  "type": "module",
-  "homepage": "https://www.shadscan.com/docs",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/TheOrcDev/shadscan.git",
-    "directory": "packages/cli"
-  },
-  "bugs": {
-    "email": "orc@orcdev.com"
-  },
   "keywords": [
     "shadcn",
     "accessibility",
@@ -22,9 +11,17 @@
     "svelte",
     "ui"
   ],
-  "engines": {
-    "node": ">=18"
+  "homepage": "https://www.shadscan.com/docs",
+  "bugs": {
+    "email": "orc@orcdev.com"
   },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/TheOrcDev/shadscan.git",
+    "directory": "packages/cli"
+  },
+  "license": "MIT",
+  "type": "module",
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
@@ -32,50 +29,53 @@
     },
     "./package.json": "./package.json"
   },
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "bin": {
     "shadscan": "dist/cli.js"
   },
-  "main": "./dist/index.js",
-  "types": "./dist/index.d.ts",
   "files": [
     "dist",
     "LICENSE",
     "README.md"
   ],
-  "publishConfig": {
-    "access": "public",
-    "registry": "https://registry.npmjs.org/"
-  },
   "scripts": {
-    "dev": "tsx src/bin.ts",
     "build": "tsup",
+    "check": "ultracite check",
+    "dev": "tsx src/bin.ts",
     "docs:rules": "node --import tsx scripts/generate-rule-catalog.ts",
     "docs:rules:check": "node --import tsx scripts/generate-rule-catalog.ts --check",
+    "fix": "ultracite fix",
     "prepack": "pnpm build",
     "release:check": "node scripts/check-release.mjs",
     "presmoke": "pnpm build",
     "smoke": "pnpm smoke:built",
     "smoke:built": "node scripts/smoke-package.mjs",
     "test": "vitest run --maxWorkers=2 --testTimeout=30000",
-    "typecheck": "tsc --noEmit",
-    "check": "ultracite check",
-    "fix": "ultracite fix"
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "cross-spawn": "7.0.6",
     "jsonc-parser": "3.3.1",
     "picocolors": "1.1.1",
-    "tinyglobby": "0.2.15",
+    "tinyglobby": "0.2.17",
     "typescript": "5.9.3",
-    "zod": "4.1.13"
+    "zod": "4.6.5"
   },
   "devDependencies": {
-    "@types/node": "18.19.130",
-    "commander": "13.1.0",
-    "execa": "9.6.1",
+    "@types/node": "22.20.5",
+    "commander": "15.0.0",
+    "execa": "10.0.1",
     "tsup": "8.5.1",
-    "tsx": "4.21.0",
+    "tsx": "4.23.15",
     "ultracite": "7.8.3",
-    "vitest": "3.2.4"
+    "vitest": "5.0.3"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
   }
 }
